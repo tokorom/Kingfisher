@@ -201,8 +201,8 @@ public class ImageDownloader: NSObject {
             fatalError("[Kingfisher] You should specify a name for the downloader. A downloader with empty name is not permitted.")
         }
         
-        barrierQueue = DispatchQueue(label: downloaderBarrierName + name, attributes: DispatchQueueAttributes.concurrent)
-        processQueue = DispatchQueue(label: imageProcessQueueName + name, attributes: DispatchQueueAttributes.concurrent)
+        barrierQueue = DispatchQueue(label: downloaderBarrierName + name, attributes: DispatchQueue.Attributes.concurrent)
+        processQueue = DispatchQueue(label: imageProcessQueueName + name, attributes: DispatchQueue.Attributes.concurrent)
         
         sessionHandler = ImageDownloaderSessionHandler()
         
@@ -284,7 +284,7 @@ extension ImageDownloader {
         self.requestModifier?(request)
         
         // There is a possiblility that request modifier changed the url to `nil` or empty.
-        if request.url == nil || (request.url!.absoluteString?.isEmpty)! {
+        if request.url == nil || request.url!.absoluteString.isEmpty {
             completionHandler?(image: nil, error: NSError(domain: KingfisherErrorDomain, code: KingfisherError.invalidURL.rawValue, userInfo: nil), imageURL: nil, originalData: nil)
             return nil
         }
@@ -393,7 +393,7 @@ class ImageDownloaderSessionHandler: NSObject, URLSessionDataDelegate, Authentic
     /**
     This method is exposed since the compiler requests. Do not call it.
     */
-    internal func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: NSError?) {
+    internal func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         
         if let URL = task.originalRequest?.url {
             if let error = error { // Error happened
